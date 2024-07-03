@@ -526,9 +526,9 @@ void CAN_Sniffer_Add_Packet( PCAN_SNIFFER_PACKET_MANAGER dev, uint16_t arbitrati
                     /* ESC Button Status */
                     if ((dev->stream[i]->pid == SNIFF_ESC_BUTTON) && (dev->stream[i]->mode == SNIFF)) {
                     	if ((data[1] & 0xE0) == 0xE0) {        // Sport Mode (E*)
-                    	    dev->stream[i]->pid_value = 2;
-                    	} else if ((data[1] & 0xD0) == 0xD0) { // Off Mode (D*)
                     	    dev->stream[i]->pid_value = 1;
+                    	} else if ((data[1] & 0xD0) == 0xD0) { // Off Mode (D*)
+                    	    dev->stream[i]->pid_value = 2;
                     	} else if ((data[1] & 0xC0) == 0xC0) { // Normal Mode (C*)
                     	    dev->stream[i]->pid_value = 0;
                     	}
