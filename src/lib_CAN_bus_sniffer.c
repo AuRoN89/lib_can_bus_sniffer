@@ -166,12 +166,8 @@ PID_SUPPORTED_STATUS CAN_Sniffer_PID_Supported( PTR_PID_DATA pid )
                     case SNIFF_CRUISE_CONTROL_RES_PLUS_BUTTON_PID:
                     #endif
 
-                    #ifdef SNIFF_ESC_SPORT_MODE_BUTTON_PID
-                    case SNIFF_ESC_SPORT_MODE_BUTTON_PID:
-                    #endif
-
-                    #ifdef SNIFF_ESC_OFF_MODE_BUTTON_PID
-                    case SNIFF_ESC_OFF_MODE_BUTTON_PID:
+                    #ifdef SNIFF_ESC_BUTTON_PID
+                    case SNIFF_ESC_BUTTON_PID:
                     #endif
 
                     #ifdef SNIFF_LATERAL_ACCELERATION_PID
@@ -331,16 +327,9 @@ PID_SUPPORTED_STATUS CAN_Sniffer_Add_PID( PCAN_SNIFFER_PACKET_MANAGER dev, PTR_P
                 break;
             #endif
 
-            #if defined(SNIFF_ESC_SPORT_MODE_BUTTON_PID) || !defined(LIMIT_PIDS)
-            case SNIFF_ESC_SPORT_MODE_BUTTON_PID:
-                add_filter( dev, SNIFF_ESC_SPORT_MODE_BUTTON_ID );
-                pid->base_unit = PID_UNITS_NONE;
-                break;
-            #endif
-
-            #if defined(SNIFF_ESC_OFF_MODE_BUTTON_PID) || !defined(LIMIT_PIDS)
-            case SNIFF_ESC_OFF_MODE_BUTTON_PID:
-                add_filter( dev, SNIFF_ESC_OFF_MODE_BUTTON_ID );
+            #if defined(SNIFF_ESC_BUTTON_PID) || !defined(LIMIT_PIDS)
+            case SNIFF_ESC_BUTTON_PID:
+                add_filter( dev, SNIFF_ESC_BUTTON_ID );
                 pid->base_unit = PID_UNITS_NONE;
                 break;
             #endif
@@ -531,18 +520,18 @@ void CAN_Sniffer_Add_Packet( PCAN_SNIFFER_PACKET_MANAGER dev, uint16_t arbitrati
                     break;
                 #endif
 
-                #if defined(SNIFF_ESC_SPORT_MODE_BUTTON_PID) || \
-                    defined(SNIFF_ESC_OFF_MODE_BUTTON_PID)
+                #if defined(SNIFF_ESC_BUTTON_PID)
                 case 0x1C0:
 
-                    /* ESC Off (ST Sport Mode) Button Status */
-                    if( (dev->stream[i]->pid == SNIFF_ESC_SPORT_MODE_BUTTON) && (dev->stream[i]->mode == SNIFF) ) {
-                        dev->stream[i]->pid_value = (float)((data[1] & 0xE0) == 0xE0);
-                    }
-
-                    /* ESC + TCS Off (ST Off Mode) Button Status */
-                    else if( (dev->stream[i]->pid == SNIFF_ESC_OFF_MODE_BUTTON) && (dev->stream[i]->mode == SNIFF) ) {
-                        dev->stream[i]->pid_value = (float)((data[1] & 0xD0) == 0xD0);
+                    /* ESC Button Status */
+                    if ((dev->stream[i]->pid == SNIFF_ESC_BUTTON) && (dev->stream[i]->mode == SNIFF)) {
+                    	if ((data[1] & 0xE0) == 0xE0) {        // Sport Mode (E*)
+                    	    dev->stream[i]->pid_value = 2;
+                    	} else if ((data[1] & 0xD0) == 0xD0) { // Off Mode (D*)
+                    	    dev->stream[i]->pid_value = 1;
+                    	} else if ((data[1] & 0xC0) == 0xC0) { // Normal Mode (C*)
+                    	    dev->stream[i]->pid_value = 0;
+                    	}
                     }
                     break;
                 #endif
