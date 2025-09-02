@@ -473,12 +473,12 @@ void CAN_Sniffer_Add_Packet( PCAN_SNIFFER_PACKET_MANAGER dev, uint16_t arbitrati
 					defined(SNIFF_CRUISE_CONTROL_RES_PLUS_BUTTON_PID)
                 case 0x030:
 
-                    /* Cruise Control OFF button Status */
+                    /* Cruise Control ON button Status */
                     if( (dev->stream[i]->pid == SNIFF_CRUISE_CONTROL_ON_BUTTON) && (dev->stream[i]->mode == SNIFF) ) {
                         dev->stream[i]->pid_value = (float)((data[5] & 0x01) > 0);
                     }
 
-                    /* Cruise Control ON Button Status */
+                    /* Cruise Control OFF Button Status */
                     else if( (dev->stream[i]->pid == SNIFF_CRUISE_CONTROL_OFF_BUTTON) && (dev->stream[i]->mode == SNIFF) ) {
                         dev->stream[i]->pid_value = (float)((data[5] & 0x02) > 0);
                     }
